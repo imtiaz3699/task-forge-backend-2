@@ -1,0 +1,1 @@
+// MONGO_URI = mongodb+srv://imtiazali78652:MdfObcZvaUvKogq1@cluster0.ztdnf5k.mongodb.net/
