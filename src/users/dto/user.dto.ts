@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 export class UserDto {
   @IsNotEmpty()
@@ -7,8 +14,10 @@ export class UserDto {
   email: string;
   @IsNotEmpty()
   password: string;
-  mobile_number:string;
-  date_of_birth:Date; 
+  @IsString()
+  mobile_number: string;
+  @IsDateString()
+  date_of_birth: Date;
 }
 
 export class LoginDto {

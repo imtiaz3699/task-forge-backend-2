@@ -7,7 +7,18 @@ export const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: String,
+  password: {
+    type: String,
+    default: '',
+  },
+  date_of_birth: {
+    type: Date,
+    default: new Date(),
+  },
+  mobile_number: {
+    type: String,
+    default: '',
+  },
 });
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
