@@ -10,15 +10,19 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { Public } from 'src/config/public';
+import { LoginDto } from 'src/users/dto/user.dto';
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signin(@Body() signInDto: Record<string, any>) {
+  async signin(@Body() signInDto: LoginDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
-  @UseGuards(AuthGuard)
+
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
