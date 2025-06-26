@@ -7,6 +7,7 @@ import {
   UseGuards,
   Get,
   Request,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -23,8 +24,8 @@ export class AuthController {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Get('profile/:id')
+  getProfile(@Param('id') id: string) {
+    return this.authService.getProfile(id);
   }
 }

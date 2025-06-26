@@ -7,6 +7,10 @@ import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProductController } from './product/product.controller';
+import { ProductService } from './product/product.service';
+import { ProductModule } from './product/product.module';
+import { CategoryController } from './category/category.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,8 +27,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     DoctorModule,
     AuthModule,
     UsersModule,
+    ProductModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, CategoryController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -43,7 +43,6 @@ export class UsersService {
     const user = new this.userModel(dto);
 
     await user.save();
-    console.log(user);
     const data = {
       user: user,
     };
@@ -55,7 +54,10 @@ export class UsersService {
   async findOne(email: string): Promise<User | null> {
     return await this.userModel.findOne({ email: email });
   }
+  async findById(id: string): Promise<User | null> {
+    return await this.userModel.findById(id).select('-password');
+  }
   async update(id: string, data: any): Promise<any> {
-    return await this.userModel.findByIdAndUpdate(id, data);
+    return await this.userModel.findByIdAndUpdate(id, data, { new: true });
   }
 }

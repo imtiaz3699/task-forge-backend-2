@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/users/interfaces/user.interfaces';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,5 +34,8 @@ export class AuthService {
       token: token,
     };
     return data;
+  }
+  async getProfile(id: string): Promise<User | null> {
+    return await this.userService.findById(id);
   }
 }
