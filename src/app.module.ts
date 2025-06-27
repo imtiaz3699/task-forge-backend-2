@@ -11,6 +11,7 @@ import { ProductController } from './product/product.controller';
 import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
 import { CategoryController } from './category/category.controller';
+import { CategoryService } from './category/category.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,6 @@ import { CategoryController } from './category/category.controller';
     ProductModule
   ],
   controllers: [AppController, CategoryController],
-  providers: [AppService],
+  providers: [AppService, CategoryService],
 })
 export class AppModule {}
