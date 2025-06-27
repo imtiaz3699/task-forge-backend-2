@@ -2,22 +2,17 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import keys from './config/keys';
 import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ProductController } from './product/product.controller';
-import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
-import { CategoryController } from './category/category.controller';
-import { CategoryService } from './category/category.service';
+import { CategoryModule } from './category/category.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // MongooseModule.forRoot(keys.mongoURI),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -28,9 +23,10 @@ import { CategoryService } from './category/category.service';
     DoctorModule,
     AuthModule,
     UsersModule,
-    ProductModule
+    ProductModule,
+    CategoryModule,
   ],
-  controllers: [AppController, CategoryController],
-  providers: [AppService, CategoryService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

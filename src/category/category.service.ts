@@ -6,7 +6,9 @@ import { CategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
 @Injectable()
 export class CategoryService {
-  constructor(@InjectModel('Product') private categoryModel: Model<Category>) {}
+  constructor(
+    @InjectModel('Category') private categoryModel: Model<Category>,
+  ) {}
   async create(data: CategoryDto): Promise<Category> {
     if (!data) {
       throw new UnauthorizedException('Data is is missing.');
@@ -28,7 +30,12 @@ export class CategoryService {
     return await this.categoryModel.find();
   }
   async delete(id: string): Promise<Category | null> {
-    return await this.categoryModel.findByIdAndDelete();
+    const res = await this.categoryModel.findByIdAndDelete(id);
+    if (!res) {
+      throw new UnauthorizedException('Category Not Found.');
+    } else {
+      return res;
+    }
   }
   async getOne(id: string): Promise<Category | null> {
     return await this.categoryModel.findById(id);
