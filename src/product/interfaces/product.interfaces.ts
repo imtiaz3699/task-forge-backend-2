@@ -11,10 +11,23 @@ export interface Product extends Document {
     width: number;
     depth: number;
   };
-  images: [string];
-  thumbnail: [string];
+  images: [
+    {
+      public_id: { type: String };
+      url: { type: String };
+    },
+  ];
+  thumbnail: [
+    [
+      {
+        public_id: { type: String };
+        url: { type: String };
+      },
+    ],
+  ];
   category: string;
   tags: [string];
   isActive: boolean;
   isFeatured: boolean;
+  quantity:number
 }

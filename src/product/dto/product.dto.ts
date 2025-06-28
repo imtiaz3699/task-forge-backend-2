@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -6,11 +7,19 @@ import {
   IsNumber,
   IsObject,
   IsString,
+  ValidateNested,
 } from 'class-validator';
-
-export class ProductDto {
+import { Types } from 'mongoose';
+export class ImageDto {
+  @IsNotEmpty()
   @IsString()
-  _id: string;
+  public_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  url: string;
+}
+export class ProductDto {
   @IsNotEmpty()
   title: string;
   @IsString()
@@ -28,9 +37,15 @@ export class ProductDto {
     width: number;
     depth: number;
   };
-  images: [string];
   @IsArray()
-  thumbnail: [string];
+  @ValidateNested({ each: true })
+  @Type(() => ImageDto)
+  images: ImageDto[];
+  @IsArray()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImageDto)
+  thumbnail: ImageDto[];
   @IsString()
   category: string;
   @IsArray()
@@ -39,6 +54,8 @@ export class ProductDto {
   isActive: boolean;
   @IsBoolean()
   isFeatured: boolean;
+  @IsNumber()
+  quantity:number
 }
 
 export class UpdateProductDto extends PartialType(ProductDto) {}

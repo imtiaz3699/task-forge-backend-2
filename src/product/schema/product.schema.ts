@@ -35,11 +35,37 @@ export class Product {
     depth: number;
   };
 
-  @Prop([String])
-  images: string[];
+  @Prop({
+    type: [
+      {
+        public_id: { type: String, required: true },
+        url: { type: String, required: true },
+      },
+    ],
+    default: [],
+  })
+  images: [
+    {
+      public_id: string;
+      url: string;
+    },
+  ];
 
-  @Prop([String])
-  thumbnail: string[];
+  @Prop({
+    type: [
+      {
+        public_id: { type: String, required: true },
+        url: { type: String, required: true },
+      },
+    ],
+    default: [],
+  })
+  thumbnail: [
+    {
+      public_id: string;
+      url: string;
+    },
+  ];
 
   @Prop({ type: Types.ObjectId, required: true })
   category: Types.ObjectId;
@@ -52,6 +78,11 @@ export class Product {
 
   @Prop()
   isFeatured: boolean;
+  @Prop({type:Number})
+  quantity: {
+    type: number;
+    default: 0;
+  };
 }
 
 // 👇 Define this for Mongoose typing
