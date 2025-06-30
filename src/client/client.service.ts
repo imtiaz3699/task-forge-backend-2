@@ -27,7 +27,8 @@ export class ClientService {
     }
     try {
       const res = await this.clientModel.find({ email: dto?.email });
-      if (res) {
+      console.log(res,'fasdfhlasdkh')
+      if (res?.length) {
         throw new UnauthorizedException('User with this email already exists.');
       }
       const client = new this.clientModel(dto);
