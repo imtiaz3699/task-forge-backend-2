@@ -8,6 +8,9 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
+import { ClientController } from './client/client.controller';
+import { ClientService } from './client/client.service';
+import { ClientModule } from './client/client.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +28,7 @@ import { CategoryModule } from './category/category.module';
     UsersModule,
     ProductModule,
     CategoryModule,
+    ClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
