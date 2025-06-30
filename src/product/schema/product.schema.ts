@@ -80,6 +80,8 @@ export class Product {
   isFeatured: boolean;
   @Prop({type:Number,default:0})
   quantity: number;
+  @Prop({type:Types.ObjectId,ref:"Invoice"})
+  invoice_id:string
 }
 
 // 👇 Define this for Mongoose typing

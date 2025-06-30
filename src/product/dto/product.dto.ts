@@ -55,7 +55,9 @@ export class ProductDto {
   @IsBoolean()
   isFeatured: boolean;
   @IsNumber()
-  quantity:number
+  quantity: number;
+  @IsString()
+  invoice_id: string;
 }
 
 export class UpdateProductDto extends PartialType(ProductDto) {}
