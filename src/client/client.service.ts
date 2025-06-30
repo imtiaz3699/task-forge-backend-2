@@ -9,8 +9,14 @@ import { ifError } from 'assert';
 export class ClientService {
   constructor(@InjectModel('Client') private clientModel: Model<Client>) {}
 
-  async getAll(): Promise<Client[]> {
-    return await this.clientModel.find();
+  async getAll(email: string): Promise<Client[]> {
+    console.log(typeof email,email,'fasdflashdlfkajdasd')
+    const safeEmail = String(email || '').trim();
+    const query: Record<string, any> = {};
+    if (safeEmail) {
+      query.email = { $regex: safeEmail, $options: 'i' };
+    }
+    return await this.clientModel.find(query);
   }
   async create(@Body() dto: ClientDto): Promise<Client | any> {
     if (!dto) {
@@ -27,7 +33,6 @@ export class ClientService {
     }
     try {
       const res = await this.clientModel.find({ email: dto?.email });
-      console.log(res,'fasdfhlasdkh')
       if (res?.length) {
         throw new UnauthorizedException('User with this email already exists.');
       }

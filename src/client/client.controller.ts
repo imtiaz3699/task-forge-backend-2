@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { Client } from './interfaces/client.interfaces';
@@ -15,8 +16,8 @@ import { ClientDto } from './dto/client.dto';
 export class ClientController {
   constructor(private readonly clientServices: ClientService) {}
   @Get('get-all-clients')
-  async getAllClients(): Promise<Client[]> {
-    return await this.clientServices.getAll();
+  async getAllClients(@Query('email') email:string): Promise<Client[]> {
+    return await this.clientServices.getAll(email);
   }
   @Post('create')
   async createClient(@Body() dto: ClientDto): Promise<Client | null> {
