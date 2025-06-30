@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
@@ -47,17 +48,20 @@ export class ProductController {
     return this.productService.update(id, dto);
   }
   @Get('get-all-products')
-  async getAllProducts(): Promise<Product[]> {
-    console.log(this.configService.get('CLOUDINARY_CLOUD_NAME'), 'fadslkj');
-    return this.productService.getAll();
+  async getAllProducts(
+    @Query('product_name') product_name: string,
+    @Query('minPrice') minPrice: number,
+    @Query('maxPrice') maxPrice: number,
+  ): Promise<Product[]> {
+    return this.productService.getAll(product_name,minPrice,maxPrice);
   }
-  @Delete('delete/:id')
+  @Delete('delete-product/:id')
   async deleteProducts(@Param('id') id: string): Promise<Product | null> {
     return this.productService.delete(id);
   }
   @Get('get-single-product/:id')
   async getSingleProduct(@Param('id') id: string): Promise<Product | null> {
-    return this.productService.delete(id);
+    return this.productService.getOne(id);
   }
 
   @Post('upload-images')

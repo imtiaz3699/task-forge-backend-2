@@ -7,7 +7,7 @@ import { ProductDto, UpdateProductDto } from './dto/product.dto';
 @Injectable()
 export class ProductService {
   constructor(@InjectModel('Product') private productModel: Model<Product>) {}
-async create(data: ProductDto): Promise<Product> {
+  async create(data: ProductDto): Promise<Product> {
     if (!data) {
       throw new UnauthorizedException('Product data is required.');
     }
@@ -27,13 +27,27 @@ async create(data: ProductDto): Promise<Product> {
   async update(id: string, data: UpdateProductDto): Promise<Product | null> {
     return await this.productModel.findByIdAndUpdate(id, data);
   }
-  async getAll(): Promise<Product[]> {
-    return await this.productModel.find();
+  async getAll(
+    product_name: string,
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<Product[]> {
+    const query: Record<string, any> = {};
+    if (product_name) {
+      query.title = { $regex: product_name, $options: 'i' };
+    }
+
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = minPrice ? Number(minPrice) : 0;
+      if (maxPrice) query.price.$lte = maxPrice ? Number(maxPrice) : 0;
+    }
+    return await this.productModel.find(query).populate('category');
   }
   async delete(id: string): Promise<Product | null> {
     return await this.productModel.findByIdAndDelete(id);
   }
   async getOne(id: string): Promise<Product | null> {
-    return await this.productModel.findById(id);
+    return await this.productModel.findById(id).populate('category');
   }
 }

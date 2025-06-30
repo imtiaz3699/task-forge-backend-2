@@ -67,7 +67,7 @@ export class Product {
     },
   ];
 
-  @Prop({ type: Types.ObjectId, required: true })
+  @Prop({ type: Types.ObjectId,ref: 'Category', required: true })
   category: Types.ObjectId;
 
   @Prop([String])
@@ -78,11 +78,8 @@ export class Product {
 
   @Prop()
   isFeatured: boolean;
-  @Prop({type:Number})
-  quantity: {
-    type: number;
-    default: 0;
-  };
+  @Prop({type:Number,default:0})
+  quantity: number;
 }
 
 // 👇 Define this for Mongoose typing
