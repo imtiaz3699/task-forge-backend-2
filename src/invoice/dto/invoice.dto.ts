@@ -5,19 +5,24 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsObject,
   IsString,
 } from 'class-validator';
+import { Invoice } from '../schema/invoice.schema';
 
 export class InvoiceDto {
   @IsNotEmpty()
+  @IsString()
   client_id: string;
   @IsString()
   invoice_number: string;
+  @Type(() => Date)
   @IsDate()
   date_of_issue: Date;
+  @Type(() => Date)
   @IsDate()
   due_date: Date;
   @IsString()
@@ -31,7 +36,10 @@ export class InvoiceDto {
   @IsString()
   currency: string;
   @IsArray()
-  product_id: [string];
-  @IsString()
-  tax_included: string;
+  @IsString({ each: true })
+  product_id: string[];
+  @IsBoolean()
+  tax_included: boolean;
 }
+
+export class UpdateInvoiceDto extends PartialType(InvoiceDto) {}
