@@ -4,20 +4,77 @@ import { Client } from './interfaces/client.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientDto, UpdateClientDto } from './dto/client.dto';
 import { ifError } from 'assert';
+import { ClientQueryDto, PaginationDto } from 'src/globalDto/pagination.dto';
 
 @Injectable()
 export class ClientService {
   constructor(@InjectModel('Client') private clientModel: Model<Client>) {}
 
-  async getAll(email: string): Promise<Client[]> {
-    console.log(typeof email,email,'fasdflashdlfkajdasd')
-    const safeEmail = String(email || '').trim();
+  // async getAll(
+  //   email: string,
+  //   name: string,
+  //   paginationDto: PaginationDto,
+  // ): Promise<Client[]> {
+  //   const { offset = 1, limit = 10 } = paginationDto;
+  //   const safeEmail = String(email || '').trim();
+  //   const query: Record<string, any> = {};
+  //   if (safeEmail) {
+  //     query.email = { $regex: safeEmail, $options: 'i' };
+  //   }
+  //   if (name) {
+  //     query.full_name = { $regex: name, $options: 'i' };
+  //   }
+  //   const res = await this.clientModel.aggregate([
+  //     {
+  //       $facet: {
+  //         data: [{ $skip: (Number(offset) - 1) * limit }, { $limit: limit }],
+  //         totalCount: [{ $count: 'count' }],
+  //       },
+  //     },
+  //   ]);
+  //   console.log(res,'fasldfjashldkfas')
+  //   return await this.clientModel.find(query);
+  // }
+
+  async getAll(clientQueryDto: ClientQueryDto): Promise<
+    | {
+        data: Client[];
+        totalResults: number;
+        totalPages: number;
+        currentPage: number;
+      }
+    | any
+  > {
+    const { offset = 1, limit = 10, name, email } = clientQueryDto;
+
     const query: Record<string, any> = {};
-    if (safeEmail) {
-      query.email = { $regex: safeEmail, $options: 'i' };
+
+    if (email) {
+      query.email = { $regex: String(email).trim(), $options: 'i' };
     }
-    return await this.clientModel.find(query);
+
+    if (name) {
+      query.full_name = { $regex: String(name).trim(), $options: 'i' };
+    }
+
+    const [res] = await this.clientModel.aggregate([
+      { $match: query },
+      {
+        $facet: {
+          data: [{ $skip: (offset - 1) * limit }, { $limit: limit }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]);
+
+    return {
+      data: res.data,
+      totalResults: res.totalCount[0]?.count || 0,
+      totalPages: Math.ceil((res.totalCount[0]?.count || 0) / limit),
+      currentPage: offset,
+    };
   }
+
   async create(@Body() dto: ClientDto): Promise<Client | any> {
     if (!dto) {
       throw new UnauthorizedException('Client data is required.');
