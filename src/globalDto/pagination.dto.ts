@@ -9,6 +9,9 @@ export class PaginationDto {
   @IsOptional()
   @Min(1)
   offset?: number;
+  @IsOptional()
+  @IsString()
+  invoice_number:string
 }
 export class ClientQueryDto {
   @IsOptional()
@@ -41,6 +44,7 @@ export class ProductQueryDto {
   @Type(() => Number)
   @IsOptional()
   maxPrice: number;
+
   @Type(()=> Number)
   @IsOptional()
   limit?: number;

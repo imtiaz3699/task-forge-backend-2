@@ -38,7 +38,11 @@ export class InvoiceService {
     return await this.invoiceModel.findByIdAndUpdate(id, data);
   }
   async getAll(paginationDto: PaginationDto): Promise<Invoice[] | any> {
-    const { limit = 10, offset = 1 } = paginationDto;
+    const { limit = 10, offset = 1, invoice_number } = paginationDto;
+    const query: Record<string, any> = {};
+    if (invoice_number) {
+      query.invoice_number = { $regex: invoice_number, $options: 'i' };
+    }
     try {
       const [res] = await this.invoiceModel.aggregate([
         {
@@ -74,6 +78,7 @@ export class InvoiceService {
                   as: 'product_id',
                 },
               },
+              { $match: query },
               { $skip: (Number(offset) - 1) * limit },
               { $limit: limit },
             ],
