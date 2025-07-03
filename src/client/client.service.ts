@@ -10,32 +10,6 @@ import { ClientQueryDto, PaginationDto } from 'src/globalDto/pagination.dto';
 export class ClientService {
   constructor(@InjectModel('Client') private clientModel: Model<Client>) {}
 
-  // async getAll(
-  //   email: string,
-  //   name: string,
-  //   paginationDto: PaginationDto,
-  // ): Promise<Client[]> {
-  //   const { offset = 1, limit = 10 } = paginationDto;
-  //   const safeEmail = String(email || '').trim();
-  //   const query: Record<string, any> = {};
-  //   if (safeEmail) {
-  //     query.email = { $regex: safeEmail, $options: 'i' };
-  //   }
-  //   if (name) {
-  //     query.full_name = { $regex: name, $options: 'i' };
-  //   }
-  //   const res = await this.clientModel.aggregate([
-  //     {
-  //       $facet: {
-  //         data: [{ $skip: (Number(offset) - 1) * limit }, { $limit: limit }],
-  //         totalCount: [{ $count: 'count' }],
-  //       },
-  //     },
-  //   ]);
-  //   console.log(res,'fasldfjashldkfas')
-  //   return await this.clientModel.find(query);
-  // }
-
   async getAll(clientQueryDto: ClientQueryDto): Promise<
     | {
         data: Client[];
@@ -46,17 +20,13 @@ export class ClientService {
     | any
   > {
     const { offset = 1, limit = 10, name, email } = clientQueryDto;
-
     const query: Record<string, any> = {};
-
     if (email) {
       query.email = { $regex: String(email).trim(), $options: 'i' };
     }
-
     if (name) {
       query.full_name = { $regex: String(name).trim(), $options: 'i' };
     }
-
     const [res] = await this.clientModel.aggregate([
       { $match: query },
       {
@@ -66,7 +36,6 @@ export class ClientService {
         },
       },
     ]);
-
     return {
       data: res.data,
       totalResults: res.totalCount[0]?.count || 0,
