@@ -33,7 +33,7 @@ export class ClientService {
           data: [{ $skip: (offset - 1) * limit }, { $limit: limit }],
           totalCount: [{ $count: 'count' }],
         },
-    },
+      },
     ]);
     return {
       data: res.data,
@@ -57,7 +57,10 @@ export class ClientService {
       throw new UnauthorizedException('Company name is required.');
     }
     try {
-      const res = await this.clientModel.find({ email: dto?.email });
+      const res = await this.clientModel
+        .find({ email: dto?.email })
+        .skip((10 - 1) * 10)
+        .limit(10);
       if (res?.length) {
         throw new UnauthorizedException('User with this email already exists.');
       }

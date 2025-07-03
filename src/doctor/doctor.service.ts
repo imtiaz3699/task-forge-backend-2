@@ -8,7 +8,10 @@ export class DoctorService {
     @InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
   ) {}
   async findAll(): Promise<Doctor[]> {
-    return await this.doctorModel.find();
+    return await this.doctorModel
+      .find()
+      .skip((1 - 1) * 50)
+      .limit(50);
   }
   async createDoctor(data: Doctor): Promise<Doctor | null> {
     return await this.doctorModel.create(data);

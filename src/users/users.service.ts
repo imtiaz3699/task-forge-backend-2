@@ -49,7 +49,10 @@ export class UsersService {
     return data;
   }
   async getUsers(): Promise<User[]> {
-    return await this.userModel.find();
+    return await this.userModel
+      .find()
+      .skip((1 - 1) * 50)
+      .limit(50);
   }
   async findOne(email: string): Promise<User | null> {
     return await this.userModel.findOne({ email: email });
