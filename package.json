@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "node --max-old-space-size=4096 node_modules/vite/bin/vite.js build && npm run copy-redirects",
+    "build": "node --max-old-space-size=4096 ./node_modules/.bin/vite build && npm run copy-redirects",
     "copy-redirects": "copyfiles -u 1 public/_redirects dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
