@@ -27,7 +27,10 @@ export class CategoryService {
     return await this.categoryModel.findByIdAndUpdate(id, data);
   }
   async getAll(): Promise<Category[]> {
-    return await this.categoryModel.find();
+    return await this.categoryModel
+      .find()
+      .skip((1 - 1) * 30)
+      .limit(30);
   }
   async delete(id: string): Promise<Category | null> {
     const res = await this.categoryModel.findByIdAndDelete(id);

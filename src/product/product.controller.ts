@@ -23,6 +23,7 @@ import { configureCloudinary } from 'src/config/cloudinary';
 import toStream = require('buffer-to-stream');
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
+import { ProductQueryDto } from 'src/globalDto/pagination.dto';
 @Controller('product')
 export class ProductController {
   constructor(
@@ -48,12 +49,8 @@ export class ProductController {
     return this.productService.update(id, dto);
   }
   @Get('get-all-products')
-  async getAllProducts(
-    @Query('product_name') product_name: string,
-    @Query('minPrice') minPrice: number,
-    @Query('maxPrice') maxPrice: number,
-  ): Promise<Product[]> {
-    return this.productService.getAll(product_name,minPrice,maxPrice);
+  async getAllProducts(@Query('') productQueryDto:ProductQueryDto ): Promise<Product[]> {
+    return this.productService.getAll(productQueryDto);
   }
   @Delete('delete-product/:id')
   async deleteProducts(@Param('id') id: string): Promise<Product | null> {

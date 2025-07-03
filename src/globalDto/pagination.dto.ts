@@ -28,3 +28,25 @@ export class ClientQueryDto {
   @Min(1)
   offset?: number;
 }
+
+export class ProductQueryDto {
+  @IsString()
+  @IsOptional()
+  product_name?: string;
+  
+  @Type(() => Number)
+  @IsOptional()
+  minPrice: number;
+  
+  @Type(() => Number)
+  @IsOptional()
+  maxPrice: number;
+  @Type(()=> Number)
+  @IsOptional()
+  limit?: number;
+
+  @Type(() => Number)
+  @IsOptional()
+  @Min(1)
+  offset?: number;
+}

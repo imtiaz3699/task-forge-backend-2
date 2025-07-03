@@ -29,6 +29,6 @@ export interface Product extends Document {
   tags: [string];
   isActive: boolean;
   isFeatured: boolean;
-  quantity:number;
-  invoice_id?:string;
+  quantity: number;
+  invoice_id?: string;
 }

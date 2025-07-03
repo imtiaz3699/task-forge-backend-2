@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './interfaces/product.interfaces';
 import { Model } from 'mongoose';
 import { ProductDto, UpdateProductDto } from './dto/product.dto';
+import { ProductQueryDto } from 'src/globalDto/pagination.dto';
 
 @Injectable()
 export class ProductService {
@@ -27,12 +28,15 @@ export class ProductService {
   async update(id: string, data: UpdateProductDto): Promise<Product | null> {
     return await this.productModel.findByIdAndUpdate(id, data);
   }
-  async getAll(
-    product_name: string,
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<Product[]> {
+  async getAll(productQueryDto: ProductQueryDto): Promise<Product[] | any> {
     const query: Record<string, any> = {};
+    const {
+      product_name,
+      minPrice,
+      maxPrice,
+      offset = 1,
+      limit = 10,
+    } = productQueryDto;
     if (product_name) {
       query.title = { $regex: product_name, $options: 'i' };
     }
@@ -42,7 +46,25 @@ export class ProductService {
       if (minPrice) query.price.$gte = minPrice ? Number(minPrice) : 0;
       if (maxPrice) query.price.$lte = maxPrice ? Number(maxPrice) : 0;
     }
-    return await this.productModel.find(query).populate('category');
+    const [res] = await this.productModel.aggregate([
+      { $match: query },
+      {
+        $facet: {
+          data: [
+            { $skip: (Number(offset) - 1) * Number(limit) },
+            { $limit: Number(limit) },
+          ],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]);
+    const totalRecords = res?.totalCount[0]?.count ?? 54545;
+    return {
+      data: res?.data,
+      totalRecords,
+      totalPages: Math.ceil((res?.totalCount[0]?.count || 0) / Number(limit)),
+      currentPage: offset,
+    };
   }
   async delete(id: string): Promise<Product | null> {
     return await this.productModel.findByIdAndDelete(id);

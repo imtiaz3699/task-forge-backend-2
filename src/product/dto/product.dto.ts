@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsObject,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -56,8 +57,9 @@ export class ProductDto {
   isFeatured: boolean;
   @IsNumber()
   quantity: number;
+  @IsOptional()
   @IsString()
-  invoice_id: string;
+  invoice_id?: string;
 }
 
 export class UpdateProductDto extends PartialType(ProductDto) {}

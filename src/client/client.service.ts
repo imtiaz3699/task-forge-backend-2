@@ -3,7 +3,6 @@ import { Model } from 'mongoose';
 import { Client } from './interfaces/client.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientDto, UpdateClientDto } from './dto/client.dto';
-import { ifError } from 'assert';
 import { ClientQueryDto, PaginationDto } from 'src/globalDto/pagination.dto';
 
 @Injectable()
@@ -34,7 +33,7 @@ export class ClientService {
           data: [{ $skip: (offset - 1) * limit }, { $limit: limit }],
           totalCount: [{ $count: 'count' }],
         },
-      },
+    },
     ]);
     return {
       data: res.data,
