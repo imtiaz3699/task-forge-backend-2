@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsDate,
@@ -35,6 +36,7 @@ export class InvoiceDto {
   terms: string;
   @IsString()
   currency: string;
+  @ArrayMaxSize(10)
   @IsArray()
   @IsString({ each: true })
   product_id: string[];

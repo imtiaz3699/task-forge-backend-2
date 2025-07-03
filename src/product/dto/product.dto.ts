@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -40,8 +41,10 @@ export class ProductDto {
   };
   @IsArray()
   @ValidateNested({ each: true })
+  @ArrayMaxSize(5)
   @Type(() => ImageDto)
   images: ImageDto[];
+  @ArrayMaxSize(3)
   @IsArray()
   @IsArray()
   @ValidateNested({ each: true })
@@ -49,6 +52,7 @@ export class ProductDto {
   thumbnail: ImageDto[];
   @IsString()
   category: string;
+  @ArrayMaxSize(10)
   @IsArray()
   tags: [string];
   @IsBoolean()
