@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-
+import { Product } from 'src/product/interfaces/product.interfaces';
 export interface Invoice extends Document {
   client_id: string;
   invoice_number: string;
@@ -12,4 +12,5 @@ export interface Invoice extends Document {
   currency: string;
   product_id: [string];
   tax_included: boolean;
+  products: Product[];
 }

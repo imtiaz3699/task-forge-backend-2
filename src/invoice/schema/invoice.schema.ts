@@ -1,12 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Document, Types } from 'mongoose';
-@Schema({timestamps:true})
+@Schema({ timestamps: true })
+class InvoiceProduct {
+  @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
+  product_id: Types.ObjectId;
+
+  @Prop({ required: true })
+  quantity: number;
+
+  @Prop()
+  unit_price: number;
+
+  @Prop()
+  total_price: number; // optional, can also calculate dynamically
+}
+
+const InvoiceProductSchema = SchemaFactory.createForClass(InvoiceProduct);
 export class Invoice {
   @Prop({
-    type:Types.ObjectId,
-    ref:"Client",
-    required:true,
+    type: Types.ObjectId,
+    ref: 'Client',
+    required: true,
   })
   client_id: Types.ObjectId;
 
@@ -34,11 +49,12 @@ export class Invoice {
   @Prop()
   currency: string;
   @Prop({
-    type: [Types.ObjectId],
-    ref: 'Product',
+    type: [{ type: Types.ObjectId, ref: 'Product' }],
     required: true,
   })
   product_id: Types.ObjectId[];
+  @Prop({ type: [InvoiceProductSchema], required: true })
+  products: InvoiceProduct[];
 
   @Prop({ type: Boolean })
   tax_included: boolean;

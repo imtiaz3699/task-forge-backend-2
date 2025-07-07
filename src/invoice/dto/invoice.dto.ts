@@ -6,13 +6,12 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
-  IsDateString,
   IsNotEmpty,
-  IsNumber,
-  IsObject,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { Invoice } from '../schema/invoice.schema';
+import { ProductDto } from 'src/product/dto/product.dto';
 
 export class InvoiceDto {
   @IsNotEmpty()
@@ -42,6 +41,10 @@ export class InvoiceDto {
   product_id: string[];
   @IsBoolean()
   tax_included: boolean;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductDto)
+  products: ProductDto[];
 }
 
 export class UpdateInvoiceDto extends PartialType(InvoiceDto) {}

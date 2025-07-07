@@ -70,7 +70,7 @@ export class InvoiceService {
                     {
                       $match: {
                         $expr: {
-                          $in: ['$_id', '$$productIds'],
+                          $in: ['$_id', { $ifNull: ['$$productIds', []] }],
                         },
                       },
                     },
