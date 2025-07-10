@@ -9,10 +9,34 @@ import { Model, Types } from 'mongoose';
 import { Invoice } from './interfaces/invoice.interfaces';
 import { InvoiceDto, UpdateInvoiceDto } from './dto/invoice.dto';
 import { PaginationDto } from 'src/globalDto/pagination.dto';
-
+import { Counter } from './schema/invoice.schema';
 @Injectable()
 export class InvoiceService {
-  constructor(@InjectModel('Invoice') private invoiceModel: Model<Invoice>) {}
+  constructor(
+    @InjectModel('Invoice') private invoiceModel: Model<Invoice>,
+    @InjectModel(Counter.name) private counterModel: Model<Counter>,
+  ) {}
+  async getNextInvoiceNumber(): Promise<string> {
+    try {
+      const counter = await this.counterModel.findOneAndUpdate(
+        { name: 'invoice' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }, // ✅ Corrected option
+      );
+
+      if (!counter) {
+        throw new InternalServerErrorException(
+          'Failed to create or update counter',
+        );
+      }
+
+      const paddedNumber = String(counter.seq).padStart(4, '0');
+      return `INV_${paddedNumber}`;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async create(data: InvoiceDto): Promise<Invoice | any> {
     if (!data) {
       throw new BadRequestException('Invoice data is required.');
@@ -28,10 +52,11 @@ export class InvoiceService {
     if (!data?.products?.length) {
       throw new BadRequestException('Please select at least one product.');
     }
-
+    const invoice_number = await this.getNextInvoiceNumber();
     const payload = {
       date_of_issue: data?.date_of_issue,
       due_date: data?.due_date,
+      invoice_number: invoice_number,
       status: data?.status,
       payment_method: data?.payment_method,
       notes: data?.notes,

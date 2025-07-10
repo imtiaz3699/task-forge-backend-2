@@ -1,6 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Document, Types } from 'mongoose';
+@Schema()
+export class Counter extends Document {
+  @Prop({ required: true, unique: true })
+  name: string;
+
+  @Prop({ required: true })
+  seq: number;
+}
+export const CounterSchema = SchemaFactory.createForClass(Counter);
+
 @Schema({ timestamps: true })
 export class InvoiceProduct {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
@@ -19,6 +29,8 @@ export class InvoiceProduct {
 const InvoiceProductSchema = SchemaFactory.createForClass(InvoiceProduct);
 @Schema({ timestamps: true })
 export class Invoice {
+  @Prop({ unique: true })
+  invoice_number: string;
   @Prop({
     type: Types.ObjectId,
     ref: 'Client',

@@ -23,6 +23,7 @@ export class ProductDto {
   total_price: number;
 }
 export class InvoiceDto {
+  
   @IsNotEmpty()
   @IsString()
   client_id: string;
