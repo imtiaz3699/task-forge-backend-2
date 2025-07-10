@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Document, Types } from 'mongoose';
 @Schema({ timestamps: true })
-class InvoiceProduct {
+export class InvoiceProduct {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
   product_id: Types.ObjectId;
 
@@ -13,10 +13,11 @@ class InvoiceProduct {
   unit_price: number;
 
   @Prop()
-  total_price: number; // optional, can also calculate dynamically
+  total_price: number;
 }
 
 const InvoiceProductSchema = SchemaFactory.createForClass(InvoiceProduct);
+@Schema({ timestamps: true })
 export class Invoice {
   @Prop({
     type: Types.ObjectId,
@@ -24,9 +25,6 @@ export class Invoice {
     required: true,
   })
   client_id: Types.ObjectId;
-
-  @Prop()
-  invoice_number: string;
 
   @Prop()
   date_of_issue: Date;

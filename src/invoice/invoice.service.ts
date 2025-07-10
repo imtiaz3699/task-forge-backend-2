@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Invoice } from './interfaces/invoice.interfaces';
@@ -8,32 +13,54 @@ import { PaginationDto } from 'src/globalDto/pagination.dto';
 @Injectable()
 export class InvoiceService {
   constructor(@InjectModel('Invoice') private invoiceModel: Model<Invoice>) {}
-  async create(data: InvoiceDto): Promise<Invoice> {
+  async create(data: InvoiceDto): Promise<Invoice | any> {
     if (!data) {
-      throw new UnauthorizedException('Invoice data is required.');
+      throw new BadRequestException('Invoice data is required.');
     }
 
     if (!data.client_id) {
-      throw new UnauthorizedException('Please select a client.');
+      throw new BadRequestException('Please select a client.');
     }
 
     if (!data.product_id?.length) {
-      throw new UnauthorizedException('Please select at least one product.');
+      throw new BadRequestException('Please select at least one product.');
+    }
+    if (!data?.products?.length) {
+      throw new BadRequestException('Please select at least one product.');
     }
 
+    const payload = {
+      date_of_issue: data?.date_of_issue,
+      due_date: data?.due_date,
+      status: data?.status,
+      payment_method: data?.payment_method,
+      notes: data?.notes,
+      terms: data?.terms,
+      currency: data?.currency,
+      tax_included: data?.tax_included,
+      client_id: new Types.ObjectId(data?.client_id),
+      product_id: data?.product_id?.map((id) => new Types.ObjectId(id)),
+      products: data?.products.map((p: any) => ({
+        product_id: new Types.ObjectId(String(p.product_id)),
+        quantity: Number(p.quantity),
+        unit_price: Number(p.unit_price),
+        total_price: Number(p.total_price),
+      })),
+    };
     try {
-      const invoice = new this.invoiceModel({
-        ...data,
-        client_id: new Types.ObjectId(data.client_id),
-        product_id: data.product_id.map((id) => new Types.ObjectId(id)),
-      });
-
-      await invoice.save();
-      return invoice;
+      const invoice = new this.invoiceModel(payload);
+      const saved = await invoice.save();
+      return saved;
+      // ✅ Optionally re-fetch with population
+      // return this.invoiceModel.findById(saved._id)
+      // .populate('client_id')
+      // .populate('products.product_id') // only if you need full product info
+      // .exec();
     } catch (e) {
-      throw new UnauthorizedException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
+
   async update(id: string, data: UpdateInvoiceDto): Promise<Invoice | null> {
     return await this.invoiceModel.findByIdAndUpdate(id, data);
   }

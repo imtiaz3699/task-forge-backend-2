@@ -7,18 +7,25 @@ import {
   IsBoolean,
   IsDate,
   IsNotEmpty,
+  IsNumber,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Invoice } from '../schema/invoice.schema';
-import { ProductDto } from 'src/product/dto/product.dto';
-
+export class ProductDto {
+  @IsString()
+  product_id: string;
+  @IsNumber()
+  quantity: number;
+  @IsNumber()
+  unit_price: number;
+  @IsNumber()
+  total_price: number;
+}
 export class InvoiceDto {
   @IsNotEmpty()
   @IsString()
   client_id: string;
-  @IsString()
-  invoice_number: string;
   @Type(() => Date)
   @IsDate()
   date_of_issue: Date;
