@@ -8,6 +8,7 @@ import {
   Invoice,
   InvoiceSchema,
 } from './schema/invoice.schema';
+import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
         schema: CounterSchema,
       },
     ]),
+    ProductModule,
   ],
   controllers: [InvoiceController],
   providers: [InvoiceService],

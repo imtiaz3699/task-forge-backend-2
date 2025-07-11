@@ -21,7 +21,7 @@ export class InvoiceController {
     return this.invoiceServices.create(dto);
   }
   @Put('update/:id')
-  async update(id: string, dto: UpdateInvoiceDto): Promise<Invoice | null> {
+  async update(@Param('id') id: string, dto: UpdateInvoiceDto): Promise<Invoice | null> {
     return this.invoiceServices.update(id, dto);
   }
   @Get('get-all-invoices')
