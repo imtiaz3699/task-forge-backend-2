@@ -16,13 +16,13 @@ import { Public } from 'src/config/public';
 export class UsersController {
   constructor(private readonly userServices: UsersService) {}
   @Public()
-  @Post()
+  @Post('register')
   async createUser(@Body() dto: UserDto): Promise<User | any> {
     return this.userServices.signup(dto);
   }
   @Put(':id')
   async updateUser(
-    @Body() dto: UpdateUserDto,
+    @Body() dto: UpdateUserDto, 
     @Param('id') id: string,
   ): Promise<any> {
     return this.userServices.update(id, dto);

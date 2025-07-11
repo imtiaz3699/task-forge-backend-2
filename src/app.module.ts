@@ -14,6 +14,7 @@ import { ClientModule } from './client/client.module';
 import { InvoiceController } from './invoice/invoice.controller';
 import { InvoiceService } from './invoice/invoice.service';
 import { InvoiceModule } from './invoice/invoice.module';
+import { MailModule } from './mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { InvoiceModule } from './invoice/invoice.module';
     CategoryModule,
     ClientModule,
     InvoiceModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [AppService],
