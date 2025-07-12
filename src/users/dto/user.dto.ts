@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDate,
   IsDateString,
   IsEmail,
@@ -18,6 +19,9 @@ export class UserDto {
   mobile_number: string;
   @IsDateString()
   date_of_birth: Date;
+  @IsOptional()
+  @IsBoolean()
+  isVerified: Boolean;
 }
 
 export class LoginDto {

@@ -21,7 +21,10 @@ export class InvoiceController {
     return this.invoiceServices.create(dto);
   }
   @Put('update/:id')
-  async update(@Param('id') id: string, dto: UpdateInvoiceDto): Promise<Invoice | null> {
+  async update(
+    @Param('id') id: string,
+    dto: UpdateInvoiceDto,
+  ): Promise<Invoice | null> {
     return this.invoiceServices.update(id, dto);
   }
   @Get('get-all-invoices')
@@ -37,5 +40,9 @@ export class InvoiceController {
   @Delete('delete-invoice/:id')
   async deleteInvoice(@Param('id') id: string): Promise<Invoice | null> {
     return this.invoiceServices.delete(id);
+  }
+  @Get('send-invoice/:id')
+  async emailInvoice(@Param('id') id: string): Promise<Invoice | null> {
+    return this.invoiceServices.sendInvoice(id);
   }
 }

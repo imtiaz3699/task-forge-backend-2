@@ -21,6 +21,9 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Email or password is wrong.');
     }
+    if(user?.isVerified === false){
+      throw new UnauthorizedException('Please verify your email first then login again.');
+    }
     const isPasswordValid = await bcrypt.compare(password, user?.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Email or password is wrong.');

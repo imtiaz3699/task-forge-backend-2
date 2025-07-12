@@ -6,4 +6,5 @@ export interface User extends Document {
   password: string;
   mobile_number: string;
   date_of_birth: Date;
+  isVerified?: Boolean;
 }

@@ -14,14 +14,28 @@ import { Counter } from './schema/invoice.schema';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { Product } from 'src/product/schema/product.schema';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
 @Injectable()
 export class InvoiceService {
   constructor(
+    private configService: ConfigService,
+    private mailerService: MailerService,
     @InjectModel('Invoice') private invoiceModel: Model<Invoice>,
     @InjectModel(Counter.name) private counterModel: Model<Counter>,
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+  async sendMailInvoice(to: string, name: string, data: any) {
+    await this.mailerService.sendMail({
+      to,
+      subject: 'Welcome to InvoiceMate!',
+      template: 'user', // welcome.hbs inside mail/templates
+      context: {
+        data,
+      },
+    });
+  }
   async getNextInvoiceNumber(): Promise<string> {
     try {
       const counter = await this.counterModel.findOneAndUpdate(
@@ -380,6 +394,24 @@ export class InvoiceService {
       return res;
     } catch (e) {
       throw new UnauthorizedException(e.message);
+    }
+  }
+
+  async sendInvoice(id: string): Promise<Invoice | null> {
+    try {
+      const res = await this.invoiceModel
+        .findById(id)
+        .populate('client_id products.product_id');
+      if (!res) {
+        throw new UnauthorizedException('Invoice does not exists');
+      }
+      const client = res?.client_id as any;
+      const email = client?.email ?? '';
+      const name = client?.name ?? '';
+      await this.sendMailInvoice(email, name, res);
+      return res;
+    } catch (e) {
+      throw new InternalServerErrorException('Internal server errr.');
     }
   }
 }

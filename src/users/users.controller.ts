@@ -22,7 +22,7 @@ export class UsersController {
   }
   @Put(':id')
   async updateUser(
-    @Body() dto: UpdateUserDto, 
+    @Body() dto: UpdateUserDto,
     @Param('id') id: string,
   ): Promise<any> {
     return this.userServices.update(id, dto);
@@ -36,5 +36,10 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: string,
   ): Promise<User | null> {
     return this.userServices.findOne(id);
+  }
+  @Public()
+  @Get('verified/:token')
+  async userVerification(@Param('token') token: string): Promise<any> {
+    return await this.userServices.verifyUser(token);
   }
 }

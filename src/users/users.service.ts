@@ -1,24 +1,34 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from './interfaces/user.interfaces';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDto } from './dto/user.dto';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private configService: ConfigService,
     private readonly mailerService: MailerService,
     @InjectModel('User') private userModel: Model<User>,
+    private jwtService: JwtService,
   ) {}
-  async sendWelcomeEmail(to: string, name: string) {
+  async sendWelcomeEmail(to: string, name: string, url: string) {
     await this.mailerService.sendMail({
       to,
       subject: 'Welcome to InvoiceMate!',
       template: 'user', // welcome.hbs inside mail/templates
       context: {
         name,
+        url,
       },
     });
   }
@@ -62,7 +72,14 @@ export class UsersService {
       const data = {
         user: user,
       };
-      await this.sendWelcomeEmail(user?.email, user?.name);
+      const payload = {
+        email: user?.email,
+        _id: user?._id,
+      };
+      const token = await this.jwtService.signAsync(payload);
+      const envUrl = this.configService.get<string>('FRONT_END_URL') ?? '';
+      const frontEndUrl = `${envUrl}?token=${token}`;
+      await this.sendWelcomeEmail(user?.email, user?.name, frontEndUrl);
       return data;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -82,5 +99,25 @@ export class UsersService {
   }
   async update(id: string, data: any): Promise<any> {
     return await this.userModel.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  async verifyUser(token: string): Promise<any> {
+    try {
+      if (!token)
+        throw new UnauthorizedException(
+          'User does not exists contact support.',
+        );
+
+      const decode = await this.jwtService.verifyAsync(token);
+      const user = await this.userModel.findByIdAndUpdate(decode?._id, {
+        isVerified: true,
+      });
+      if (!user) {
+        throw new BadRequestException('User not found.');
+      }
+      return user; 
+    } catch (e) {
+      throw new InternalServerErrorException("Internal server error.")
+    }
   }
 }
