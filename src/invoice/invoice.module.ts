@@ -9,6 +9,7 @@ import {
   InvoiceSchema,
 } from './schema/invoice.schema';
 import { ProductModule } from 'src/product/product.module';
+import { InvoiceGateway } from './invoice.gateway';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ProductModule } from 'src/product/product.module';
     ProductModule,
   ],
   controllers: [InvoiceController],
-  providers: [InvoiceService],
+  providers: [InvoiceService, InvoiceGateway],
   exports: [InvoiceService],
 })
 export class InvoiceModule {}

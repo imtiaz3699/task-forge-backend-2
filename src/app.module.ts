@@ -15,6 +15,7 @@ import { InvoiceController } from './invoice/invoice.controller';
 import { InvoiceService } from './invoice/invoice.service';
 import { InvoiceModule } from './invoice/invoice.module';
 import { MailModule } from './mail.module';
+import { EventsGateway } from './events/events.gateway';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,6 +38,6 @@ import { MailModule } from './mail.module';
     MailModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventsGateway],
 })
 export class AppModule {}

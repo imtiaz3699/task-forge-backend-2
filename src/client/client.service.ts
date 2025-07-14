@@ -4,10 +4,14 @@ import { Client } from './interfaces/client.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientDto, UpdateClientDto } from './dto/client.dto';
 import { ClientQueryDto, PaginationDto } from 'src/globalDto/pagination.dto';
+import { ClientGateway } from './client.gateway';
 
 @Injectable()
 export class ClientService {
-  constructor(@InjectModel('Client') private clientModel: Model<Client>) {}
+  constructor(
+    @InjectModel('Client') private clientModel: Model<Client>,
+    private readonly clientGateway: ClientGateway,
+  ) {}
 
   async getAll(clientQueryDto: ClientQueryDto): Promise<
     | {
@@ -66,6 +70,9 @@ export class ClientService {
       }
       const client = new this.clientModel(dto);
       await client.save();
+      if (client) {
+        this.clientGateway.clientCreated(client);
+      }
       return client;
     } catch (error) {
       throw new UnauthorizedException(error?.message);
@@ -88,6 +95,9 @@ export class ClientService {
       if (!updatedClient) {
         throw new UnauthorizedException('Client does not exists.');
       }
+      if (updatedClient) {
+        this.clientGateway.clientUpdated(updatedClient);
+      }
       return updatedClient;
     } catch (error) {
       throw new UnauthorizedException(error?.message);
@@ -109,6 +119,9 @@ export class ClientService {
       const res = await this.clientModel.findByIdAndDelete(id);
       if (!res) {
         throw new UnauthorizedException('Cliient does not exists.');
+      }
+      if (res) {
+        this.clientGateway.clientDeleted(id);
       }
       return res;
     } catch (e) {

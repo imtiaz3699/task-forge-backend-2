@@ -1,13 +1,21 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './interfaces/product.interfaces';
 import { Model } from 'mongoose';
 import { ProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductQueryDto } from 'src/globalDto/pagination.dto';
+import { ProductsGateway } from './produts.gateway';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel('Product') private productModel: Model<Product>) {}
+  constructor(
+    @InjectModel('Product') private productModel: Model<Product>,
+    private readonly productsGateway: ProductsGateway,
+  ) {}
   async create(data: ProductDto): Promise<Product> {
     if (!data) {
       throw new UnauthorizedException('Product data is required.');
@@ -23,10 +31,18 @@ export class ProductService {
     }
     const product = new this.productModel(data);
     await product.save();
+    this.productsGateway.productCreated(product);
     return product;
   }
   async update(id: string, data: UpdateProductDto): Promise<Product | null> {
-    return await this.productModel.findByIdAndUpdate(id, data);
+    const product = await this.productModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+    if (!product) {
+      throw new BadRequestException('Product not found.');
+    }
+    this.productsGateway.productUpdated(product);
+    return product;
   }
   async getAll(productQueryDto: ProductQueryDto): Promise<Product[] | any> {
     const query: Record<string, any> = {};
@@ -59,6 +75,7 @@ export class ProductService {
       },
     ]);
     const totalRecords = res?.totalCount[0]?.count ?? 54545;
+
     return {
       data: res?.data,
       totalRecords,
@@ -67,7 +84,12 @@ export class ProductService {
     };
   }
   async delete(id: string): Promise<Product | null> {
-    return await this.productModel.findByIdAndDelete(id);
+    const deleteProduct = await this.productModel.findByIdAndDelete(id);
+    if (!deleteProduct) {
+      throw new BadRequestException('Product not found!.');
+    }
+    this.productsGateway.productDeleted(id);
+    return deleteProduct;
   }
   async getOne(id: string): Promise<Product | null> {
     return await this.productModel.findById(id).populate('category');

@@ -16,6 +16,7 @@ import { Connection } from 'mongoose';
 import { Product } from 'src/product/schema/product.schema';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
+import { InvoiceGateway } from './invoice.gateway';
 @Injectable()
 export class InvoiceService {
   constructor(
@@ -25,15 +26,18 @@ export class InvoiceService {
     @InjectModel(Counter.name) private counterModel: Model<Counter>,
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectConnection() private readonly connection: Connection,
+    private readonly invoiceGateway: InvoiceGateway,
   ) {}
   async sendMailInvoice(to: string, name: string, invoice: any) {
-    const formattedProducts = invoice?.products?.map((item:any) => ({
+    const formattedProducts = invoice?.products?.map((item: any) => ({
       title: item?.product_id?.title || 'Untitled Product',
       quantity: item?.quantity,
       price: item?.total_price,
     }));
-    console.log(formattedProducts,'adsflhasld3f1as23df1')
-    const total = formattedProducts.reduce((sum:any, p:any) => sum + p?.price, 0);
+    const total = formattedProducts.reduce(
+      (sum: any, p: any) => sum + p?.price,
+      0,
+    );
 
     await this.mailerService.sendMail({
       to,
@@ -63,13 +67,11 @@ export class InvoiceService {
         { $inc: { seq: 1 } },
         { new: true, upsert: true }, // ✅ Corrected option
       );
-
       if (!counter) {
         throw new InternalServerErrorException(
           'Failed to create or update counter',
         );
       }
-
       const paddedNumber = String(counter.seq).padStart(4, '0');
       return `INV_${paddedNumber}`;
     } catch (error) {
@@ -141,6 +143,9 @@ export class InvoiceService {
       const saved = await invoice.save({ session });
       await session.commitTransaction();
       session.endSession();
+      if (saved) {
+        this.invoiceGateway.invoiceCreated(saved);
+      }
       return saved;
     } catch (e) {
       throw new InternalServerErrorException(e.message);
@@ -248,6 +253,9 @@ export class InvoiceService {
 
       await session.commitTransaction();
       session.endSession();
+      if (updatedInvoice) {
+        this.invoiceGateway.invoiceUpdated(updatedInvoice);
+      }
       return updatedInvoice;
     } catch (error) {
       await session.abortTransaction();
@@ -326,6 +334,7 @@ export class InvoiceService {
       if (!res) {
         throw new UnauthorizedException('Invoice does not exists');
       }
+      this.invoiceGateway.invoiceDeleted(id);
       return res;
     } catch (e) {
       throw new UnauthorizedException(e.message);
