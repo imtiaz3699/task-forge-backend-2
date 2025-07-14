@@ -23,7 +23,7 @@ export class InvoiceController {
   @Put('update/:id')
   async update(
     @Param('id') id: string,
-    dto: UpdateInvoiceDto,
+    @Body() dto: UpdateInvoiceDto,
   ): Promise<Invoice | null> {
     return this.invoiceServices.update(id, dto);
   }

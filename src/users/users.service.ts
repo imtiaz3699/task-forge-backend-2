@@ -61,10 +61,7 @@ export class UsersService {
       const isUserExists = await this.userModel.find({ email: dto?.email });
 
       if (isUserExists?.length) {
-        return {
-          statusCode: 400,
-          message: 'User with this email already exists.',
-        };
+        throw new BadRequestException("User with this email already exists.")
       }
       const user = new this.userModel(dto);
 

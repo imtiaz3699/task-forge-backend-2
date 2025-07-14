@@ -1,0 +1,141 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f6f8;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+      }
+      .container {
+        max-width: 640px;
+        margin: 30px auto;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border-top: 8px solid #c8ee44;
+      }
+      .header {
+        padding: 30px;
+        background-color: #c8ee44;
+        text-align: center;
+        color: #222;
+      }
+      .header h2 {
+        margin: 0;
+        font-size: 26px;
+      }
+      .section {
+        padding: 24px 30px;
+      }
+      .section h3 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #555;
+      }
+      .info p {
+        margin: 4px 0;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .table-section {
+        margin-top: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background-color: #f0f2f4;
+        padding: 12px;
+        text-align: left;
+        border-bottom: 2px solid #e0e0e0;
+      }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .total {
+        text-align: right;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 16px 30px;
+        color: #222;
+      }
+      .footer {
+        padding: 20px 30px;
+        background-color: #fafafa;
+        font-size: 13px;
+        color: #777;
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <h2>Invoice #{{invoice_number}}</h2>
+        <p>Status: {{status}}</p>
+      </div>
+
+      <div class='section info'>
+        <h3>Client Details</h3>
+        <p><strong>Name:</strong> {{client_name}}</p>
+        <p><strong>Email:</strong> {{client_email}}</p>
+        <p><strong>Payment Method:</strong> {{payment_method}}</p>
+        <p><strong>Tax Included:</strong> {{tax_included}}</p>
+      </div>
+
+      <div class='section info'>
+        <h3>Invoice Info</h3>
+        <p><strong>Issue Date:</strong> {{date_of_issue}}</p>
+        <p><strong>Due Date:</strong> {{due_date}}</p>
+        <p><strong>Currency:</strong> {{currency}}</p>
+      </div>
+
+      <div class='section table-section'>
+        <h3>Products</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Total ({{currency}})</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each products}}
+              <tr>
+                <td>{{this.title}}</td>
+                <td>{{this.quantity}}</td>
+                <td>{{this.price}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div class='total'>
+        Grand Total:
+        {{currency}}
+        {{total}}
+      </div>
+
+      <div class='section info'>
+        <h3>Notes</h3>
+        <p>{{notes}}</p>
+        <h3>Terms</h3>
+        <p>{{terms}}</p>
+      </div>
+
+      <div class='footer'>
+        Thank you for your business. If you have any questions, feel free to
+        reply to this email.
+      </div>
+    </div>
+  </body>
+</html>
