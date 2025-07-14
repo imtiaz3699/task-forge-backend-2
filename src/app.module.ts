@@ -16,6 +16,9 @@ import { InvoiceService } from './invoice/invoice.service';
 import { InvoiceModule } from './invoice/invoice.module';
 import { MailModule } from './mail.module';
 import { EventsGateway } from './events/events.gateway';
+import { NotificationsController } from './notifications/notifications.controller';
+import { NotificationsService } from './notifications/notifications.service';
+import { NotificationModule } from './notifications/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +38,8 @@ import { EventsGateway } from './events/events.gateway';
     CategoryModule,
     ClientModule,
     InvoiceModule,
-    MailModule
+    MailModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService, EventsGateway],
